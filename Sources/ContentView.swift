@@ -192,6 +192,64 @@ struct ScheduledView: View {
     }
 }
 
+struct FacebookConnectView: View {
+    @State private var message = "Click below to sign in securely using your browser."
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            ZStack {
+                Circle().fill(Color.blue).frame(width: 88, height: 88)
+                Text("f").font(.system(size: 62, weight: .bold)).foregroundStyle(.white)
+            }
+            Text("Connect Facebook").font(.largeTitle.bold())
+            Text(message)
+                .font(.title3)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 520)
+            Button {
+                openFacebookLogin()
+            } label: {
+                Label("Continue with Facebook", systemImage: "safari")
+                    .font(.title3.weight(.semibold))
+                    .frame(minWidth: 300)
+                    .padding(.vertical, 8)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            Text("Your Facebook password is entered only on Facebook's website.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer()
+        }
+        .padding(40)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func openFacebookLogin() {
+        guard let appID = Bundle.main.object(forInfoDictionaryKey: "FacebookAppID") as? String,
+              !appID.isEmpty,
+              appID != "YOUR_META_APP_ID" else {
+            message = "Facebook browser login is ready, but Motive Social still needs its Meta App ID configured."
+            return
+        }
+
+        let redirect = "https://www.facebook.com/connect/login_success.html"
+        var components = URLComponents(string: "https://www.facebook.com/v23.0/dialog/oauth")
+        components?.queryItems = [
+            URLQueryItem(name: "client_id", value: appID),
+            URLQueryItem(name: "redirect_uri", value: redirect),
+            URLQueryItem(name: "response_type", value: "code"),
+            URLQueryItem(name: "scope", value: "pages_show_list,pages_manage_posts")
+        ]
+        if let url = components?.url {
+            NSWorkspace.shared.open(url)
+            message = "Facebook opened in your browser. Complete authorization there."
+        }
+    }
+}
+
 struct FacebookPagesView: View {
     @State private var showingSetup = false
 
@@ -229,7 +287,7 @@ struct FacebookPagesView: View {
                         .foregroundStyle(.secondary)
 
                     Button {
-                        showingSetup = true
+                        NSApp.sendAction(#selector(NSSplitViewController.toggleSidebar(_:)), to: nil, from: nil)
                     } label: {
                         HStack {
                             Image(systemName: "link")

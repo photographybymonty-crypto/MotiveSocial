@@ -165,7 +165,16 @@ struct ScheduledView: View {
         VStack(alignment: .leading, spacing: 18) {
             Text("Scheduled Posts").font(.largeTitle.bold())
             if store.scheduledPosts.isEmpty {
-                ContentUnavailableView("No scheduled posts", systemImage: "clock", description: Text("Create a post and add it to the queue."))
+                VStack(spacing: 12) {
+                    Image(systemName: "clock")
+                        .font(.system(size: 42))
+                        .foregroundStyle(.secondary)
+                    Text("No scheduled posts")
+                        .font(.title2.bold())
+                    Text("Create a post and add it to the queue.")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List(store.scheduledPosts) { post in
                     VStack(alignment: .leading, spacing: 6) {

@@ -7,7 +7,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
     case scheduled = "Scheduled"
     case media = "Media"
     case campaigns = "Campaigns"
-    case pages = "Facebook Pages"
+    case connectFacebook = "Connect Facebook"\n    case pages = "Facebook Pages"
     case groups = "Groups"
     case history = "History"
     case settings = "Settings"

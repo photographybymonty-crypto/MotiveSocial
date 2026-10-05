@@ -193,18 +193,111 @@ struct ScheduledView: View {
 }
 
 struct FacebookPagesView: View {
+    @State private var showingSetup = false
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            Text("Facebook Pages").font(.largeTitle.bold())
-            Text("Connect Facebook to discover and publish to Pages you manage.")
-            Button("Connect Facebook") {}
-                .buttonStyle(.borderedProminent)
-            Text("OAuth and Graph API credentials are intentionally not embedded in this build.")
-                .font(.caption)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                Text("Facebook").font(.largeTitle.bold())
+                Text("Connect your Facebook account to manage and publish to eligible Pages from Motive Social.")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack(spacing: 16) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.blue)
+                                .frame(width: 64, height: 64)
+                            Text("f")
+                                .font(.system(size: 44, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("Facebook Account")
+                                .font(.title2.bold())
+                            Label("Not connected", systemImage: "circle.fill")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+
+                    Divider()
+
+                    Text("Connect once, then Motive Social can discover the Facebook Pages your account is authorized to manage.")
+                        .foregroundStyle(.secondary)
+
+                    Button {
+                        showingSetup = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "link")
+                            Text("Connect Facebook Account")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Image(systemName: "arrow.right")
+                        }
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                }
+                .padding(24)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(.quaternary))
+                .frame(maxWidth: 700)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("Connection required", systemImage: "lock.shield")
+                        .font(.headline)
+                    Text("Live Facebook authorization needs a Meta App ID and configured OAuth redirect. Motive Social will never ask for or store your Facebook password.")
+                        .foregroundStyle(.secondary)
+                }
+                .padding(18)
+                .frame(maxWidth: 700, alignment: .leading)
+                .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
+
+                Spacer(minLength: 20)
+            }
+            .padding(30)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .sheet(isPresented: $showingSetup) {
+            FacebookConnectionSetupView()
+        }
+    }
+}
+
+struct FacebookConnectionSetupView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack {
+                Text("Connect Facebook").font(.title.bold())
+                Spacer()
+                Button("Close") { dismiss() }
+            }
+
+            Label("Facebook login setup is required", systemImage: "key.fill")
+                .font(.headline)
+
+            Text("The button is now active. To open the real Facebook authorization page safely, the next step is to add your Meta App ID and OAuth redirect configuration. Those values should be supplied through app configuration rather than hard-coded credentials.")
+
+            Text("Required Page permissions")
+                .font(.headline)
+            Text("pages_show_list • pages_manage_posts")
+                .textSelection(.enabled)
                 .foregroundStyle(.secondary)
+
             Spacer()
+
+            Button("Close") { dismiss() }
+                .keyboardShortcut(.cancelAction)
         }
         .padding(28)
+        .frame(width: 560, height: 330)
     }
 }
 
